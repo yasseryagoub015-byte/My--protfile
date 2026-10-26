@@ -1,0 +1,448 @@
+/* ===================================================================
+   Contact panel — standalone stylesheet.
+   Nothing here modifies the existing theme: it reuses the same fonts
+   ("title" / "text"), the white-on-transparent palette, and the
+   1px underline motif from .menuReveal .linkWrapper .media a.
+   The panel has no opaque background so the WebGL scene stays visible.
+   =================================================================== */
+
+.contactTrigger {
+  cursor: none;
+  position: relative;
+  color: azure;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+@media screen and (max-width: 1024px) {
+  .contactTrigger {
+    cursor: pointer;
+  }
+}
+
+.contactPanel {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 400;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  -webkit-transition: opacity 0.6s cubic-bezier(0.75, 0, 0, 1),
+    visibility 0.6s cubic-bezier(0.75, 0, 0, 1);
+  transition: opacity 0.6s cubic-bezier(0.75, 0, 0, 1),
+    visibility 0.6s cubic-bezier(0.75, 0, 0, 1);
+}
+
+.contactPanel.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: all;
+}
+
+/* Subtle scrim: keeps the animated background readable while giving the
+   form enough contrast to be usable. */
+.contactPanel__scrim {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  cursor: none;
+}
+
+.contactPanel__inner {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  margin: 0 6%;
+  padding: 4% 5%;
+  -webkit-transform: translateY(60px);
+  transform: translateY(60px);
+  -webkit-transition: -webkit-transform 0.7s cubic-bezier(0.75, 0, 0, 1);
+  transition: transform 0.7s cubic-bezier(0.75, 0, 0, 1);
+  max-height: 92vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.contactPanel.is-open .contactPanel__inner {
+  -webkit-transform: translateY(0);
+  transform: translateY(0);
+}
+
+.contactPanel__eyebrow {
+  display: block;
+  font-family: "text";
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: azure;
+  margin-bottom: 1.2%;
+}
+
+.contactPanel__title {
+  font-family: "title";
+  font-size: 5vw;
+  letter-spacing: 0.4vw;
+  line-height: 1;
+  color: white;
+  text-transform: uppercase;
+  margin: 0 0 4% 0;
+  font-weight: 400;
+}
+
+.contactPanel__intro {
+  font-family: "text";
+  font-size: 13px;
+  letter-spacing: 1.2px;
+  line-height: 1.9;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75);
+  margin: -2% 0 5% 0;
+}
+
+.contactPanel__close {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: none;
+  opacity: 0.75;
+  -webkit-transition: opacity 0.4s cubic-bezier(0.75, 0, 0, 1),
+    -webkit-transform 0.4s cubic-bezier(0.75, 0, 0, 1);
+  transition: opacity 0.4s cubic-bezier(0.75, 0, 0, 1),
+    transform 0.4s cubic-bezier(0.75, 0, 0, 1);
+}
+
+.contactPanel__close:hover {
+  opacity: 1;
+  -webkit-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+
+.contactPanel__close span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 22px;
+  height: 1px;
+  background: white;
+}
+
+.contactPanel__close span:first-child {
+  -webkit-transform: translate(-50%, -50%) rotate(45deg);
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.contactPanel__close span:last-child {
+  -webkit-transform: translate(-50%, -50%) rotate(-45deg);
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* ------------------------------ Form ------------------------------ */
+
+.contactForm {
+  font-family: "text";
+}
+
+.field {
+  position: relative;
+  margin-bottom: 5%;
+}
+
+.field__label {
+  display: block;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 8px;
+  -webkit-transition: color 0.4s cubic-bezier(0.75, 0, 0, 1);
+  transition: color 0.4s cubic-bezier(0.75, 0, 0, 1);
+}
+
+.field.is-filled .field__label,
+.field.is-focused .field__label {
+  color: azure;
+}
+
+.field.is-invalid .field__label {
+  color: #ff6b6b;
+}
+
+.field__control {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 0;
+  color: white;
+  font-family: "text";
+  font-size: 13px;
+  letter-spacing: 1.2px;
+  line-height: 1.7;
+  padding: 10px 2px;
+  cursor: text;
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-transition: border-color 0.6s cubic-bezier(0.75, 0, 0, 1);
+  transition: border-color 0.6s cubic-bezier(0.75, 0, 0, 1);
+}
+
+/* The site kills text selection globally; form fields must stay editable. */
+.contactPanel .field__control,
+.contactPanel .field__control * {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+}
+
+.contactPanel .field__control::-webkit-input-placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.contactPanel .field__control::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.contactPanel .field__control:focus {
+  outline: none;
+}
+
+.field textarea.field__control {
+  resize: none;
+  min-height: 118px;
+  overflow-y: auto;
+}
+
+/* Animated underline, same easing as the nav links */
+.field__rule {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: white;
+  -webkit-transform: scaleX(0);
+  transform: scaleX(0);
+  -webkit-transform-origin: bottom right;
+  transform-origin: bottom right;
+  -webkit-transition: -webkit-transform 0.6s cubic-bezier(0.75, 0, 0, 1);
+  transition: transform 0.6s cubic-bezier(0.75, 0, 0, 1);
+  pointer-events: none;
+}
+
+.field__control:focus ~ .field__rule {
+  -webkit-transform-origin: bottom left;
+  transform-origin: bottom left;
+  -webkit-transform: scaleX(1);
+  transform: scaleX(1);
+}
+
+.field.is-invalid .field__rule {
+  background: #ff6b6b;
+  -webkit-transform: scaleX(1);
+  transform: scaleX(1);
+}
+
+.field.is-invalid .field__control {
+  border-bottom-color: rgba(255, 107, 107, 0.6);
+}
+
+.field__error {
+  margin: 8px 0 0 0;
+  font-size: 11px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #ff6b6b;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  -webkit-transition: opacity 0.4s ease, max-height 0.4s ease;
+  transition: opacity 0.4s ease, max-height 0.4s ease;
+}
+
+.field.is-invalid .field__error {
+  max-height: 40px;
+  opacity: 1;
+}
+
+/* Honeypot — invisible to humans, catches bots */
+.field--hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.contactForm__submit {
+  position: relative;
+  display: inline-block;
+  margin-top: 1%;
+  padding: 14px 34px;
+  background: transparent;
+  border: none;
+  color: white;
+  font-family: "title";
+  font-size: 13px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  cursor: none;
+  -webkit-transition: opacity 0.4s cubic-bezier(0.75, 0, 0, 1);
+  transition: opacity 0.4s cubic-bezier(0.75, 0, 0, 1);
+}
+
+.contactForm__submit:after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  bottom: 6px;
+  left: 0;
+  background: white;
+  -webkit-transform: scaleX(0);
+  transform: scaleX(0);
+  -webkit-transform-origin: bottom right;
+  transform-origin: bottom right;
+  -webkit-transition: -webkit-transform 0.6s cubic-bezier(0.75, 0, 0, 1);
+  transition: transform 0.6s cubic-bezier(0.75, 0, 0, 1);
+}
+
+.contactForm__submit:hover:after,
+.contactForm__submit:focus-visible:after {
+  -webkit-transform-origin: bottom left;
+  transform-origin: bottom left;
+  -webkit-transform: scaleX(1);
+  transform: scaleX(1);
+}
+
+.contactForm__submit:focus {
+  outline: none;
+}
+
+.contactForm__submit[disabled] {
+  opacity: 0.45;
+  cursor: progress;
+}
+
+@media screen and (max-width: 1024px) {
+  .contactForm__submit,
+  .contactPanel__close,
+  .contactPanel__scrim,
+  .contactTrigger {
+    cursor: pointer;
+  }
+
+  .contactPanel__title {
+    font-size: 7vw;
+  }
+}
+
+.contactForm__status {
+  margin: 18px 0 0 0;
+  font-size: 12px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  line-height: 1.8;
+  min-height: 22px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.contactForm__status.is-success {
+  color: #7dffb2;
+}
+
+.contactForm__status.is-error {
+  color: #ff6b6b;
+}
+
+.contactPanel__fallback {
+  margin: 26px 0 0 0;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  font-family: "text";
+  font-size: 12px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.contactPanel__fallback a {
+  color: azure;
+  text-decoration: none;
+  position: relative;
+}
+
+.contactPanel__fallback a:after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  bottom: -2px;
+  left: 0;
+  background: azure;
+  -webkit-transform: scaleX(0);
+  transform: scaleX(0);
+  -webkit-transform-origin: bottom right;
+  transform-origin: bottom right;
+  -webkit-transition: -webkit-transform 0.6s cubic-bezier(0.75, 0, 0, 1);
+  transition: transform 0.6s cubic-bezier(0.75, 0, 0, 1);
+}
+
+.contactPanel__fallback a:hover:after {
+  -webkit-transform-origin: bottom left;
+  transform-origin: bottom left;
+  -webkit-transform: scaleX(1);
+  transform: scaleX(1);
+}
+
+@media screen and (max-width: 767px) {
+  .contactPanel__inner {
+    padding: 8% 7%;
+    margin: 0 4%;
+  }
+
+  .contactPanel__title {
+    font-size: 11vw;
+    letter-spacing: 0.6vw;
+    margin-bottom: 8%;
+  }
+
+  .contactPanel__eyebrow,
+  .contactPanel__intro,
+  .field__label,
+  .field__control,
+  .contactForm__status {
+    font-size: 12px;
+  }
+
+  .field {
+    margin-bottom: 8%;
+  }
+
+  textarea.field__control {
+    min-height: 150px;
+  }
+}

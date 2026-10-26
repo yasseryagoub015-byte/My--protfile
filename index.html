@@ -11,7 +11,9 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>Yasser| Portfolio</title>
   <script defer="defer" src="./app.js"></script>
+  <script defer="defer" src="./contact.js"></script>
   <link href="./main.css" rel="stylesheet" />
+  <link href="./contact.css" rel="stylesheet" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap"
@@ -61,9 +63,18 @@
   </div>
   <div class="menuReveal">
     <div class="linkWrapper linkWrapper--1">
-      <li class="media media--0" style="color: azure;">CONTACT</li>
+      <li class="media media--0" style="color: azure;">
+        <a
+          href="#contact"
+          id="contactTrigger"
+          class="contactTrigger"
+          style="color: azure; font-weight: bold;"
+          aria-haspopup="dialog"
+          >CONTACT</a
+        >
+      </li>
       <li class="media media--thoma">
-        <a href="mailto:yasseryagoob15@gmail.com" style="color: azure; font-weight: bold;">Email</a>
+        <a href="mailto:yasseryagoub015@gmail.com" style="color: azure; font-weight: bold;">Email</a>
       </li>
       <li class="media media--thoma">
         <a href="https://github.com/Yasser19992001" target="_blank" style="color: azure; font-weight: bold;">Github</a>
@@ -408,6 +419,99 @@
   </div>
   <div class="musicWrapper">
     <canvas class="canvas--music" style="width: 50px; height: 25px"></canvas>
+  </div>
+  <div class="contactPanel" id="contactPanel" aria-hidden="true">
+    <div class="contactPanel__scrim" data-contact-close></div>
+    <div
+      class="contactPanel__inner"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="contactPanelTitle"
+    >
+      <button
+        class="contactPanel__close"
+        type="button"
+        data-contact-close
+        aria-label="Close contact form"
+      >
+        <span></span><span></span>
+      </button>
+      <span class="contactPanel__eyebrow">Get in touch</span>
+      <h2 class="contactPanel__title" id="contactPanelTitle">Contact</h2>
+      <p class="contactPanel__intro">
+        Need a website, a 3D experience or a rebuild? Tell me what you have in
+        mind.
+      </p>
+      <form class="contactForm" id="contactForm" novalidate>
+        <div class="field">
+          <label class="field__label" for="contactName">Name</label>
+          <input
+            class="field__control"
+            id="contactName"
+            name="name"
+            type="text"
+            autocomplete="name"
+            placeholder="Your name"
+            required
+          />
+          <span class="field__rule"></span>
+          <p class="field__error" data-field-error></p>
+        </div>
+        <div class="field">
+          <label class="field__label" for="contactEmail">Email</label>
+          <input
+            class="field__control"
+            id="contactEmail"
+            name="email"
+            type="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+            required
+          />
+          <span class="field__rule"></span>
+          <p class="field__error" data-field-error></p>
+        </div>
+        <div class="field">
+          <label class="field__label" for="contactMessage">
+            What should I build?
+          </label>
+          <textarea
+            class="field__control"
+            id="contactMessage"
+            name="message"
+            rows="5"
+            placeholder="Project, timeline, budget..."
+            required
+          ></textarea>
+          <span class="field__rule"></span>
+          <p class="field__error" data-field-error></p>
+        </div>
+        <div class="field field--hp" aria-hidden="true">
+          <label for="contactWebsite">Leave this empty</label>
+          <input
+            class="field__control"
+            id="contactWebsite"
+            name="website"
+            type="text"
+            tabindex="-1"
+            autocomplete="off"
+          />
+        </div>
+        <button class="contactForm__submit" type="submit">
+          <span>Send message</span>
+        </button>
+        <p
+          class="contactForm__status"
+          data-contact-status
+          role="status"
+          aria-live="polite"
+        ></p>
+      </form>
+      <p class="contactPanel__fallback">
+        Or email me directly at
+        <a href="mailto:yasseryagoub015@gmail.com">yasseryagoub015@gmail.com</a>
+      </p>
+    </div>
   </div>
   <canvas class="canvas canvas--main"></canvas>
   <canvas class="canvas canvas--noise"></canvas>
