@@ -41,9 +41,9 @@ body {
   transition: all 1s ease-in-out;
 }
 
-@media screen and (max-width: 1024px) {
+@media (hover: none), (pointer: coarse) {
   body {
-    cursor: auto;
+    cursor: auto !important;
   }
 }
 
@@ -180,11 +180,10 @@ body {
   -ms-flex-align: center;
   align-items: center;
   overflow: hidden;
-  mix-blend-mode: difference;
   pointer-events: none;
-  z-index: 500;
+  z-index: 9999;
   border-radius: 0%;
-  display: none;
+  display: block;
   opacity: 0;
 }
 
@@ -200,12 +199,6 @@ body {
   letter-spacing: 0.15vw;
   mix-blend-mode: difference;
   opacity: 0;
-}
-
-@media screen and (max-width: 1024px) {
-  .cursor {
-    display: none;
-  }
 }
 
 .cursor .octagon {
@@ -265,6 +258,69 @@ body {
   width: 4px;
   height: 4px;
   background: #ffffff;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cursor--main,
+  .cursor--indication {
+    display: none !important;
+  }
+
+  .cursor--dot,
+  .cursor--follower {
+    position: fixed !important;
+    display: block !important;
+    box-sizing: border-box !important;
+    border-radius: 50% !important;
+    mix-blend-mode: normal !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+    padding: 0 !important;
+    transition: opacity 180ms ease;
+  }
+
+  .cursor--follower {
+    width: 38px !important;
+    height: 38px !important;
+    padding: 0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.55) !important;
+    box-shadow: 0 0 14px rgba(255, 255, 255, 0.16),
+      inset 0 0 10px rgba(255, 255, 255, 0.06);
+  }
+
+  .cursor--follower .octagon {
+    display: none !important;
+  }
+
+  .cursor--dot {
+    width: 5px !important;
+    height: 5px !important;
+    background: #fff !important;
+    border: 0 !important;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.9),
+      0 0 18px rgba(255, 255, 255, 0.4);
+  }
+
+  body.has-moon-cursor .cursor--follower {
+    opacity: 0.72 !important;
+  }
+
+  body.has-moon-cursor .cursor--dot {
+    opacity: 1 !important;
+  }
+}
+
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .cursor {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body,
+  body * {
+    cursor: auto !important;
+  }
 }
 
 .hamburgerWrapper {
@@ -2192,3 +2248,90 @@ html.has-scroll-dragging {
 }
 
 /*# sourceMappingURL=main.css.map*/
+
+.portfolioProjects {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: clamp(20px, 4vw, 56px);
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 8%;
+}
+
+.portfolioProjectCard {
+  display: flex;
+  min-height: 250px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+  padding: clamp(24px, 4vw, 48px);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  color: white;
+  text-decoration: none;
+  transition: border-color 0.4s cubic-bezier(0.75, 0, 0, 1),
+    background-color 0.4s cubic-bezier(0.75, 0, 0, 1),
+    transform 0.4s cubic-bezier(0.75, 0, 0, 1);
+}
+
+.portfolioProjectCard__title {
+  font-family: "title";
+  font-size: clamp(24px, 3vw, 42px);
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.portfolioProjectCard__description,
+.portfolioProjectCard__action {
+  font-family: "text";
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  line-height: 1.8;
+}
+
+.portfolioProjectCard__description {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.portfolioProjectCard__action {
+  width: fit-content;
+  margin-top: 10px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.55);
+  color: azure;
+  text-transform: uppercase;
+}
+
+.portfolioProjectCard[aria-disabled="true"] {
+  cursor: default;
+}
+
+.portfolioProjectCard.is-configured {
+  cursor: pointer;
+}
+
+.portfolioProjectCard.is-configured:hover,
+.portfolioProjectCard.is-configured:focus-visible {
+  border-color: white;
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-4px);
+}
+
+.portfolioProjectCard:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 4px;
+}
+
+@media screen and (max-width: 767px) {
+  .portfolioProjects {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 6%;
+  }
+
+  .portfolioProjectCard {
+    min-height: 190px;
+  }
+}

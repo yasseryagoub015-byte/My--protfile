@@ -1,19 +1,6 @@
-/* Contact panel: open/close, validation, and email delivery via Web3Forms.
- * Only CONTACT_ACCESS_KEY needs to be filled in — see README instructions.
- */
+/* Contact panel interactions, validation, and project-request submission. */
 (() => {
   "use strict";
-
-  // ---- 1. Paste your Web3Forms access key here (https://web3forms.com) ----
-  const CONTACT_ACCESS_KEY = "YOUR_WEB3FORMS_ACCESS_KEY";
-  const CONTACT_ENDPOINT = "https://api.web3forms.com/submit";
-  const RECIPIENT_EMAIL = "yasseryagoub015@gmail.com";
-  // -------------------------------------------------------------------------
-
-  const KEY_IS_CONFIGURED =
-    CONTACT_ACCESS_KEY &&
-    CONTACT_ACCESS_KEY !== "YOUR_WEB3FORMS_ACCESS_KEY" &&
-    /^[A-Za-z0-9-]{16,}$/.test(CONTACT_ACCESS_KEY);
 
   const panel = document.getElementById("contactPanel");
   const trigger = document.getElementById("contactTrigger");
@@ -22,21 +9,71 @@
 
   const statusEl = form.querySelector("[data-contact-status]");
   const submitBtn = form.querySelector("[type=submit]");
-  const fields = {
-    name: form.elements.name,
-    email: form.elements.email,
-    message: form.elements.message,
+  const submitLabel = submitBtn.querySelector("span");
+  const scroller = panel.querySelector(".contactPanel__inner");
+  const fieldNames = [
+    "name",
+    "email",
+    "phone",
+    "projectType",
+    "projectTitle",
+    "message",
+    "features",
+    "requirements",
+    "budget",
+    "timeline",
+    "preferredContact",
+  ];
+  const fields = Object.fromEntries(
+    [...fieldNames, "company", "notes"].map((name) => [
+      name,
+      form.elements.namedItem(name),
+    ])
+  );
+  const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+  const rules = {
+    name: (value) =>
+      value.trim().length < 2 ? "Please enter your full name" : "",
+    email: (value) =>
+      !EMAIL_PATTERN.test(value.trim()) ? "Enter a valid email address" : "",
+    phone: (value) =>
+      value.trim().length < 5 || !/\d/.test(value)
+        ? "Enter a valid phone or WhatsApp number"
+        : "",
+    projectType: (value) => (!value ? "Choose a project type" : ""),
+    projectTitle: (value) =>
+      value.trim().length < 2 ? "Enter a project name or title" : "",
+    message: (value) =>
+      value.trim().length < 10
+        ? "Describe your project in at least 10 characters"
+        : "",
+    features: (value) =>
+      value.trim().length === 0 ? "List the features you need" : "",
+    requirements: (value) =>
+      value.trim().length === 0
+        ? "Add your recommendations or requirements"
+        : "",
+    budget: (value) => (!value ? "Choose a budget range" : ""),
+    timeline: (value) =>
+      value.trim().length === 0 ? "Add an expected timeline" : "",
+    preferredContact: (value) =>
+      !value ? "Choose a preferred contact method" : "",
   };
 
-  /* ------------------------------ open / close ----------------------------- */
-
   let lastFocused = null;
+  let submitAttempted = false;
+  let isSubmitting = false;
 
   function openPanel() {
     lastFocused = document.activeElement;
     panel.classList.add("is-open");
     panel.setAttribute("aria-hidden", "false");
     window.setTimeout(() => fields.name.focus({ preventScroll: true }), 450);
+  }
+
+  function clearStatus() {
+    statusEl.textContent = "";
+    statusEl.classList.remove("is-success", "is-error");
   }
 
   function closePanel() {
@@ -48,214 +85,172 @@
     }
   }
 
-  if (trigger) {
-    trigger.addEventListener("click", (e) => {
-      e.preventDefault();
-      openPanel();
-    });
-  }
-
-  panel.querySelectorAll("[data-contact-close]").forEach((el) => {
-    el.addEventListener("click", closePanel);
-  });
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && panel.classList.contains("is-open")) closePanel();
-  });
-
-  // Keep the smooth-scroll page from moving while the form is being used.
-  ["wheel", "touchmove"].forEach((evt) => {
-    panel.addEventListener(
-      evt,
-      (e) => {
-        if (e.target.closest(".contactPanel__inner")) {
-          e.stopPropagation();
-          return;
-        }
-        e.preventDefault();
-      },
-      { passive: false }
-    );
-  });
-
-  /* ------------------------------- validation ------------------------------ */
-
-  const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
-
-  const RULES = {
-    name: (v) =>
-      v.trim().length === 0
-        ? "Please enter your name"
-        : v.trim().length < 2
-        ? "Your name is too short"
-        : "",
-    email: (v) =>
-      v.trim().length === 0
-        ? "Please enter your email"
-        : EMAIL_PATTERN.test(v.trim())
-        ? ""
-        : "That email doesn't look right",
-    message: (v) =>
-      v.trim().length === 0
-        ? "Please describe what you want built"
-        : v.trim().length < 10
-        ? "A few more details, please (min. 10 characters)"
-        : v.trim().length > 3000
-        ? "Please keep it under 3000 characters"
-        : "",
-  };
-
-  function setFieldState(name, error) {
-    const field = fields[name].closest(".field");
-    const errorEl = field.querySelector("[data-field-error]");
-    field.classList.toggle("is-invalid", Boolean(error));
-    field.classList.toggle("is-filled", fields[name].value.trim().length > 0);
-    fields[name].setAttribute("aria-invalid", error ? "true" : "false");
-    if (errorEl) errorEl.textContent = error || "";
-    return !error;
-  }
-
-  function validateField(name) {
-    return setFieldState(name, RULES[name](fields[name].value));
-  }
-
-  let submitAttempted = false;
-
-  function validateForm() {
-    submitAttempted = true;
-    return Object.keys(RULES).map(validateField).every(Boolean);
-  }
-
-  Object.keys(RULES).forEach((name) => {
-    const input = fields[name];
-    input.addEventListener("input", () => {
-      const field = input.closest(".field");
-      field.classList.toggle("is-filled", input.value.trim().length > 0);
-      // Re-validate only once an error is showing, so typing feels free.
-      if (field.classList.contains("is-invalid")) validateField(name);
-    });
-    // Don't scold a visitor for a field they never wrote in.
-    input.addEventListener("blur", () => {
-      input.closest(".field").classList.remove("is-focused");
-      if (submitAttempted || input.value.trim().length > 0) validateField(name);
-    });
-    input.addEventListener("focus", () =>
-      input.closest(".field").classList.add("is-focused")
-    );
-  });
-
-  /* --------------------------------- status -------------------------------- */
-
-  function clearStatus() {
-    statusEl.textContent = "";
-    statusEl.classList.remove("is-success", "is-error");
+  function revealInPanel(element) {
+    if (!scroller || !element) return;
+    const box = scroller.getBoundingClientRect();
+    const rect = element.getBoundingClientRect();
+    const margin = 24;
+    if (rect.top < box.top) {
+      scroller.scrollTop -= box.top - rect.top + margin;
+    } else if (rect.bottom > box.bottom) {
+      scroller.scrollTop += rect.bottom - box.bottom + margin;
+    }
   }
 
   function showStatus(message, kind) {
     statusEl.textContent = message;
     statusEl.classList.remove("is-success", "is-error");
     statusEl.classList.add(kind === "success" ? "is-success" : "is-error");
+    revealInPanel(statusEl);
+  }
+
+  function setFieldState(name, error) {
+    const input = fields[name];
+    const field = input.closest(".field");
+    const errorEl = field.querySelector("[data-field-error]");
+    field.classList.toggle("is-invalid", Boolean(error));
+    field.classList.toggle("is-filled", input.value.trim().length > 0);
+    input.setAttribute("aria-invalid", error ? "true" : "false");
+    if (errorEl) errorEl.textContent = error || "";
+    return !error;
+  }
+
+  function validateField(name) {
+    return setFieldState(name, rules[name](fields[name].value));
+  }
+
+  function validateForm() {
+    submitAttempted = true;
+    return Object.keys(rules).map(validateField).every(Boolean);
   }
 
   function setLoading(isLoading) {
     submitBtn.disabled = isLoading;
-    submitBtn.querySelector("span").textContent = isLoading
-      ? "SENDING"
-      : "SEND MESSAGE";
+    submitBtn.setAttribute("aria-busy", String(isLoading));
+    submitLabel.textContent = isLoading
+      ? "Sending project request..."
+      : "Send Project Request";
   }
 
   function buildPayload() {
-    return {
-      access_key: CONTACT_ACCESS_KEY,
-      subject: "New build request from " + fields.name.value.trim(),
-      from_name: fields.name.value.trim(),
-      name: fields.name.value.trim(),
-      email: fields.email.value.trim(),
-      message: fields.message.value.trim(),
-      botcheck: form.elements.website.value,
-    };
+    return Object.fromEntries(
+      [...fieldNames, "company", "notes", "website"].map((name) => {
+        const value = form.elements.namedItem(name).value;
+        return [name, value.trim()];
+      })
+    );
   }
 
-  // Opens the visitor's mail client pre-filled — used when no key is
-  // configured yet, or when the network request fails.
-  function mailtoFallback(payload) {
-    const body =
-      "Name: " +
-      payload.name +
-      "\nEmail: " +
-      payload.email +
-      "\n\nMessage:\n" +
-      payload.message;
-    const href =
-      "mailto:" +
-      RECIPIENT_EMAIL +
-      "?subject=" +
-      encodeURIComponent("Build request from " + payload.name) +
-      "&body=" +
-      encodeURIComponent(body);
-    window.location.href = href;
-  }
-
-  async function sendViaWeb3Forms(payload) {
-    const response = await fetch(CONTACT_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(payload),
+  if (trigger) {
+    trigger.addEventListener("click", (event) => {
+      event.preventDefault();
+      openPanel();
     });
-    return { ok: response.ok, data: await response.json().catch(() => ({})) };
   }
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  panel.querySelectorAll("[data-contact-close]").forEach((element) => {
+    element.addEventListener("click", closePanel);
+  });
 
-    if (form.elements.website.value) return; // bot
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && panel.classList.contains("is-open")) {
+      closePanel();
+    }
+  });
+
+  ["wheel", "touchmove"].forEach((eventName) => {
+    panel.addEventListener(
+      eventName,
+      (event) => {
+        if (event.target.closest(".contactPanel__inner")) {
+          event.stopPropagation();
+          return;
+        }
+        event.preventDefault();
+      },
+      { passive: false }
+    );
+  });
+
+  Object.entries(fields).forEach(([name, input]) => {
+    if (!input) return;
+    input.addEventListener("input", () => {
+      const field = input.closest(".field");
+      field.classList.toggle("is-filled", input.value.trim().length > 0);
+      if (field.classList.contains("is-invalid") && rules[name]) {
+        validateField(name);
+      }
+    });
+    input.addEventListener("change", () => {
+      if (fieldNames.includes(name) && submitAttempted) validateField(name);
+    });
+    input.addEventListener("blur", () => {
+      input.closest(".field").classList.remove("is-focused");
+      if (rules[name] && (submitAttempted || input.value.trim())) {
+        validateField(name);
+      }
+    });
+    input.addEventListener("focus", () =>
+      input.closest(".field").classList.add("is-focused")
+    );
+  });
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (isSubmitting) return;
+
     if (!validateForm()) {
       showStatus("Please fix the highlighted fields", "error");
-      const firstInvalid = form.querySelector(".is-invalid .field__control");
-      if (firstInvalid) firstInvalid.focus();
-      return;
-    }
-
-    const payload = buildPayload();
-
-    if (!KEY_IS_CONFIGURED) {
-      mailtoFallback(payload);
-      showStatus(
-        "Opening your mail app to send to " + RECIPIENT_EMAIL,
-        "success"
+      const firstInvalid = form.querySelector(
+        ".is-invalid .field__control"
       );
+      if (firstInvalid) {
+        revealInPanel(firstInvalid);
+        firstInvalid.focus({ preventScroll: true });
+      }
       return;
     }
 
+    isSubmitting = true;
     setLoading(true);
     clearStatus();
 
     try {
-      const { ok, data } = await sendViaWeb3Forms(payload);
-      if (ok && data.success) {
-        showStatus("Message sent — I'll reply within 24h.", "success");
-        form.reset();
-        Object.keys(RULES).forEach((name) =>
-          setFieldState(name, "")
-        );
-      } else {
-        showStatus(
-          data.message || "Something went wrong. Please try again.",
-          "error"
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(buildPayload()),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(
+          (result && result.message) ||
+            "Your request could not be sent. Please try again."
         );
       }
-    } catch (err) {
-      mailtoFallback(payload);
-      showStatus("Network issue — opened your mail app instead.", "error");
+      if (!result || typeof result.message !== "string") {
+        throw new Error(
+          "The server did not confirm your request. Please try again."
+        );
+      }
+
+      showStatus(result.message, "success");
+      form.reset();
+      submitAttempted = false;
+      Object.keys(rules).forEach((name) => setFieldState(name, ""));
+    } catch (error) {
+      showStatus(
+        error instanceof Error
+          ? error.message
+          : "Unable to send your request right now. Please try again.",
+        "error"
+      );
     } finally {
+      isSubmitting = false;
       setLoading(false);
     }
   });
 
-  // Deep-link support: index.html#contact opens the panel (e.g. from a card).
   if (window.location.hash === "#contact") openPanel();
   window.addEventListener("hashchange", () => {
     if (window.location.hash === "#contact") openPanel();

@@ -38025,6 +38025,8 @@
         pg = __webpack_require__(503),
         dg = __webpack_require__.n(pg);
       Sd.registerPlugin(Jf), hg()();
+      const projectWrapperOrStub = (selector) =>
+        document.querySelector(selector) || document.createElement("div");
       const fg = new Jo(),
         // Shader / alpha / mask textures used by the WebGL shaders (alpha maps, displacement maps)
         mg = fg.load("./textures/alpha/alphaRing.jpg"), // alpha ring (used as alpha map)
@@ -38099,26 +38101,26 @@
         xv = document.querySelector("video"),
         bv = document.querySelector(".rotateMobileIndication"),
         Mv = document.querySelectorAll(".projectWrapper"),
-        Sv = document.querySelector(".projectWrapper--1"),
-        Tv = document.querySelector(".projectWrapper--2"),
-        Ev = document.querySelector(".projectWrapper--3"),
-        Av = document.querySelector(".projectWrapper--4"),
-        Lv = document.querySelector(".projectWrapper--5"),
-        Pv = document.querySelector(".projectWrapper--6"),
-        Rv = document.querySelector(".projectWrapper--7"),
-        kv = document.querySelector(".projectWrapper--8"),
-        Cv = document.querySelector(".projectWrapper--9"),
-        Ov = document.querySelector(".projectWrapper--10"),
-        Nv = document.querySelector(".projectWrapper--11"),
-        Iv = document.querySelector(".projectWrapper--12"),
-        Dv = document.querySelector(".projectWrapper--13"),
-        jv = document.querySelector(".projectWrapper--14"),
-        Fv = document.querySelector(".projectWrapper--15"),
-        Hv = document.querySelector(".projectWrapper--16"),
-        Bv = document.querySelector(".projectWrapper--17"),
-        zv = document.querySelector(".projectWrapper--18"),
-        Uv = document.querySelector(".projectWrapper--19"),
-        Gv = document.querySelector(".projectWrapper--20"),
+        Sv = projectWrapperOrStub(".projectWrapper--1"),
+        Tv = projectWrapperOrStub(".projectWrapper--2"),
+        Ev = projectWrapperOrStub(".projectWrapper--3"),
+        Av = projectWrapperOrStub(".projectWrapper--4"),
+        Lv = projectWrapperOrStub(".projectWrapper--5"),
+        Pv = projectWrapperOrStub(".projectWrapper--6"),
+        Rv = projectWrapperOrStub(".projectWrapper--7"),
+        kv = projectWrapperOrStub(".projectWrapper--8"),
+        Cv = projectWrapperOrStub(".projectWrapper--9"),
+        Ov = projectWrapperOrStub(".projectWrapper--10"),
+        Nv = projectWrapperOrStub(".projectWrapper--11"),
+        Iv = projectWrapperOrStub(".projectWrapper--12"),
+        Dv = projectWrapperOrStub(".projectWrapper--13"),
+        jv = projectWrapperOrStub(".projectWrapper--14"),
+        Fv = projectWrapperOrStub(".projectWrapper--15"),
+        Hv = projectWrapperOrStub(".projectWrapper--16"),
+        Bv = projectWrapperOrStub(".projectWrapper--17"),
+        zv = projectWrapperOrStub(".projectWrapper--18"),
+        Uv = projectWrapperOrStub(".projectWrapper--19"),
+        Gv = projectWrapperOrStub(".projectWrapper--20"),
         Wv = document.querySelectorAll("img"),
         Vv = document.querySelector(".aboutWrapper--2 img"),
         qv = document.querySelector(".workRevealWrapper p"),
@@ -38554,10 +38556,8 @@
         f_.on("progress", (e) => {
           let t = Math.floor(100 * e.progress);
           (Vg.innerHTML = t),
-            /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-              navigator.userAgent
-            ) ||
-            window.matchMedia("(max-width: 1024px)").matches ||
+            !window.matchMedia("(hover: hover) and (pointer: fine)").matches ||
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
             setTimeout(function () {
               Zv.forEach((e) => {
                 e.style.display = "block";
@@ -39062,10 +39062,18 @@
             }, 750)),
           "work" == gy &&
           ((wy = !0),
-            Sd.to(".projectName", 0.75, { opacity: 0, ease: "power3" }),
-            Sd.to(".projectCat", 0.75, { opacity: 0, ease: "power3" }),
-            Sd.to(".projectName", 0, { transform: "scale(1.17)", delay: 0.75 }),
-            Sd.to(".projectCat", 0, { transform: "scale(1.17)", delay: 0.75 }),
+            Sd.to(".portfolioProjectCard", 0.75, {
+              opacity: 0,
+              ease: "power3",
+            }),
+            Sd.to(".portfolioProjectCard__description", 0.75, {
+              opacity: 0,
+              ease: "power3",
+            }),
+            Sd.to(".portfolioProjectCard", 0, {
+              transform: "scale(1.17)",
+              delay: 0.75,
+            }),
             /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
               navigator.userAgent
             ) || window.matchMedia("(max-width: 1024px)").matches
@@ -39073,7 +39081,8 @@
                 setTimeout(function () {
                   m_.remove(F_);
                 }, 750))
-              : (setTimeout(function () {
+              : Mv.length > 0 &&
+              (setTimeout(function () {
                 m_.remove(j_);
               }, 750),
                 Sd.to(P_.uniforms.u_alpha, 0.75, { value: 0, ease: "power3" }),
@@ -39532,20 +39541,14 @@
             m_.add(j_),
             (_y = !1),
             setTimeout(function () {
-              Sd.to(".projectName", 1.5, {
+              Sd.to(".portfolioProjectCard", 1.5, {
                 opacity: 1,
                 transform: "scale(1)",
                 ease: "power3",
               }),
-                Sd.to(".projectCat", 1.5, {
+                Sd.to(".portfolioProjectCard__description", 1.5, {
                   opacity: 1,
                   transform: "scale(1)",
-                  ease: "power3",
-                }),
-                Sd.to(".projectName .mask--1 .char", 0.5, {
-                  opacity: 0,
-                  clipPath: "inset(100% 0% 0% 0%)",
-                  stagger: { each: Py, from: "end" },
                   ease: "power3",
                 }),
                 setTimeout(function () {
@@ -40500,8 +40503,12 @@
             ((gv.style.display = "none"),
               (vv.style.display = "none"),
               (yv.style.display = "flex"),
-              Sd.to(".projectName", 0, { transform: "scale(1.17)" }),
-              Sd.to(".projectCat", 0, { transform: "scale(1.17)" }),
+            Sd.to(".portfolioProjectCard", 0, {
+              transform: "scale(1.17)",
+            }),
+            Sd.to(".portfolioProjectCard__description", 0, {
+              transform: "scale(1.17)",
+            }),
               (gy = "work"),
               q_(),
               setTimeout(() => {
@@ -40528,8 +40535,12 @@
                 delay: 0.75,
               }),
               Sd.to(".homeLink", 0.75, { opacity: 0, ease: "power3" }),
-              Sd.to(".projectName", 0, { transform: "scale(1.17)" }),
-              Sd.to(".projectCat", 0, { transform: "scale(1.17)" }),
+              Sd.to(".portfolioProjectCard", 0, {
+                transform: "scale(1.17)",
+              }),
+              Sd.to(".portfolioProjectCard__description", 0, {
+                transform: "scale(1.17)",
+              }),
               (gy = "work"),
               q_(),
               (Ty = !1),
@@ -43970,11 +43981,16 @@
         }),
         Jf.addEventListener("refresh", () => ew.update()),
         Jf.refresh(),
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent
-        ) ||
-        window.matchMedia("(max-width: 1024px)").matches ||
-        (Sd.set(Qv, { xPercent: -50, yPercent: -50 }),
+        !window.matchMedia("(hover: hover) and (pointer: fine)").matches ||
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+        (document.addEventListener("pointermove", function (e) {
+          "mouse" === e.pointerType &&
+            document.body.classList.add("has-moon-cursor");
+        }),
+          document.addEventListener("pointerleave", () => {
+            document.body.classList.remove("has-moon-cursor");
+          }),
+          Sd.set(Qv, { xPercent: -50, yPercent: -50 }),
           Sd.set(Kv, { xPercent: -50, yPercent: -50 }),
           Sd.set($v, { xPercent: -50, yPercent: -50 }),
           Sd.set(ey, { xPercent: -50, yPercent: -50 }),
